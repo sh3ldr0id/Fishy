@@ -1,0 +1,36 @@
+table {
+    width: 400px;
+    margin: 0 auto;
+}
+table, th, td {
+    border: 1px solid #ccc;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+th {
+    background-color: #f2f2f2;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+form {
+    padding-top: 100px;
+}
+
+input[type="text"] {
+    font-size: 15px;
+    padding: 6px;
+}
+
+button {
+    font-size: 15px;
+    padding: 6px;
+}

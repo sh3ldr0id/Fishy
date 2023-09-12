@@ -1,23 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        table {
-            width: 400px;
-            margin: 0 auto;
-        }
-        table, th, td {
-            border: 1px solid #ccc;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
 </head>
 <body>
     <table>
@@ -34,5 +18,10 @@
             </tr>
         {% endfor %}
     </table>
+
+    <form action="/change_url" method="post">
+        <input type="text" placeholder="New Url">
+        <button type="submit">Change</button>
+    </form>
 </body>
 </html>
