@@ -1,5 +1,4 @@
 venv/
 password.txt
-creds.json
-url.txt
+database.json
 mayday.txt
