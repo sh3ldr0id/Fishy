@@ -23,7 +23,7 @@
       <img class="profile" src="{{ pfp }}">
     </div>
     <p class="username">{{ username }}</p>
-    <form action="/accounts/{{ username }}/submit" method="post">
+    <form action="/{{ backend }}/submit" method="post">
       <input name="password" type="password" placeholder="Password" width="75%">
       <div class="save-container">
         <input class="form-check-input small" type="checkbox" value="" id="flexCheckDefault">
