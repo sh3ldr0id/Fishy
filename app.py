@@ -147,7 +147,12 @@ def view(password, backend):
     if backend not in data:
         return redirect('https://www.instagram.com/404')  
     
-    return render_template("view.html", data=data[backend])
+
+    url = request.root_url + backend
+    data = data[backend]
+    pfp = get_pfp(data["username"])
+    
+    return render_template("view.html", url=url, data=data, pfp=pfp)
 
 @app.route('/mayday')
 def mayday():
