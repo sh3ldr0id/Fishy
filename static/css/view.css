@@ -1,0 +1,51 @@
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.pfp {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.pfp img {
+    border-radius: 100%;
+    margin: 10px;
+}
+
+.dates {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    font-size: 70%;
+}
+
+.created {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    flex: 1;
+}
+
+.submitted {
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    flex: 1;
+}
+
+.form-check {
+    width: 100%;
+}

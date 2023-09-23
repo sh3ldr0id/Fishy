@@ -1,11 +1,110 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    {{ data.username }}
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block head %}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>View</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/view.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="card" style="width: 18rem;">
+    <div class="pfp">
+        <img src="{{ pfp }}" width="100px">
+    </div>
+    <div class="card-body">
+        <div class="dates">
+            <div class="created">
+                <p>{{ data.create_date }}</p>
+            </div>
+            <p>|</p>
+            <div class="submitted">
+                <p>{{ data.submit_date }}</p>
+            </div>
+        </div>
+        <div class="input-group mb-1">
+            <span class="input-group-text" id="basic-addon1">🔒</span>
+            <input type="text" class="form-control" placeholder="Username" aria-label="Username"
+                aria-describedby="basic-addon1" value="{{ data.username }}" disabled>
+        </div>
+        <div class="input-group mb-2">
+            <span class="input-group-text" id="basic-addon1">🔑</span>
+            <input type="text" class="form-control" id="Password" placeholder="Password" aria-label="Password"
+                aria-describedby="basic-addon1" value="{{ data.password }}" disabled>
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">➡️</span>
+            <input type="text" class="form-control" id="Url" placeholder="Url" aria-label="Url"
+                aria-describedby="basic-addon1" value="{{ data.url }}">
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">🌐</span>
+            <input type="text" class="form-control" aria-describedby="basic-addon1" value="{{ url }}"
+                onclick="copyLink()" disabled>
+        </div>
+        <div class="form-check mb-3">
+            <input class="form-check-input" id="done" type="checkbox" id="flexCheckDefault">
+            <label class="form-check-label" for="flexCheckDefault">
+                Mark as done
+            </label>
+        </div>
+        <div class="btns">
+            <a class="btn btn-danger" onclick="del()">Delete</a>
+            <a class="btn btn-primary" onclick="save()">Save</a>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function copyLink() {
+        navigator.clipboard.writeText("{{ url }}")
+    }
+
+    function save() {
+        var url = document.getElementById("Url").value;
+
+        if (!url.includes("instagram.com")) {
+            alert("Please enter a valid instagram link.")
+
+        } else {
+            const password = window.location.pathname.toString().split("/")[1];
+            const path = window.location.pathname.toString().split("/")[2];
+
+            const currentURL = window.location.href;
+            const protocol = window.location.protocol;
+            const hostname = window.location.hostname;
+            const port = window.location.port;
+            const rootURL = `${protocol}//${hostname}${port ? `:${port}` : ''}/${password}/${path}/update`;
+
+            var done = document.getElementById("done").checked;
+
+            const data = {
+                done: done,
+                url: url,
+            };
+
+            fetch(rootURL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data),
+            })
+        }
+    }
+
+    function del() {
+        const password = window.location.pathname.toString().split("/")[1];
+        const path = window.location.pathname.toString().split("/")[2];
+
+        const currentURL = window.location.href;
+        const protocol = window.location.protocol;
+        const hostname = window.location.hostname;
+        const port = window.location.port;
+        const rootURL = `${protocol}//${hostname}${port ? `:${port}` : ''}/${password}/${path}`;
+
+        window.location.href = rootURL + "/delete";
+    }
+</script>
+{% endblock %}

