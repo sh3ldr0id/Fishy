@@ -45,3 +45,7 @@ body {
     align-items: center;
     flex: 1;
 }
+
+.form-check {
+    width: 100%;
+}
