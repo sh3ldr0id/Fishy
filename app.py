@@ -8,13 +8,25 @@ import os
 
 app = Flask(__name__)
 
-if not exists('password.txt'):
-    with open('password.txt', 'w') as file:
-        file.write("password")
+if not exists('config.json'):
+    with open('config.json', 'w') as file:
+        file.write(
+            dumps(
+                obj={
+                    "host": "127.0.0.1",
+                    "port": "4156",
+                    "password": "password"
+                },
+                indent=4,
+            )
+        )
 
 if not exists('database.json'):
     with open('database.json', 'w') as file:
         file.write("{}")
+
+with open("config.json", "r") as file:
+    CONFIG = file.read()
 
 def get_pfp(username):
     base_url = f"https://www.instagram.com/{username}/"
@@ -92,20 +104,14 @@ def submit(backend):
     
 @app.route('/<password>/create')
 def create(password):
-    with open("password.txt", "r") as file:
-        original_password = file.read()
-
-    if password != original_password:
+    if password != CONFIG["password"]:
         return redirect("https://www.instagram.com/404")
     
     return render_template("create.html", url=request.url_root)
 
 @app.route('/<password>/create/submit', methods=["POST"])
 def create_new(password):
-    with open("password.txt", "r") as file:
-        original_password = file.read()
-
-    if password != original_password:
+    if password != CONFIG["password"]:
         return redirect("https://www.instagram.com/404")
     
     data = request.form
@@ -143,10 +149,7 @@ def create_new(password):
     
 @app.route('/<password>/<backend>/view')
 def view(password, backend):
-    with open("password.txt", "r") as file:
-        original_password = file.read()
-
-    if password != original_password:
+    if password != CONFIG["password"]:
         return redirect("https://www.instagram.com/404")
     
     with open('database.json', 'r') as file:
@@ -157,7 +160,6 @@ def view(password, backend):
     if backend not in data:
         return redirect('https://www.instagram.com/404')  
     
-
     url = request.root_url + backend
     data = data[backend]
     pfp = get_pfp(data["username"])
@@ -166,10 +168,7 @@ def view(password, backend):
 
 @app.route('/<password>/<backend>/update', methods=["POST"])
 def update(password, backend):
-    with open("password.txt", "r") as file:
-        original_password = file.read()
-
-    if password != original_password:
+    if password != CONFIG["password"]:
         return redirect("https://www.instagram.com/404")
     
     with open('database.json', 'r') as file:
@@ -198,10 +197,7 @@ def update(password, backend):
 
 @app.route('/<password>/<backend>/delete')
 def delete(password, backend):
-    with open("password.txt", "r") as file:
-        original_password = file.read()
-
-    if password != original_password:
+    if password != CONFIG["password"]:
         return redirect("https://www.instagram.com/404")
     
     with open('database.json', 'r') as file:
@@ -224,8 +220,11 @@ def delete(password, backend):
 
     return "", 200
 
-@app.route('/mayday')
-def mayday():
+@app.route('/<password>/mayday')
+def mayday(password):
+    if password != CONFIG["password"]:
+        return redirect("https://www.instagram.com/404")
+    
     date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     with open("mayday.txt", "w") as file:
@@ -236,4 +235,8 @@ def mayday():
     os._exit(0)
 
 if __name__ == '__main__':
-    app.run()
+    app.run(
+        host=CONFIG["host"],
+        port=CONFIG["port"],
+        debug=False
+    )

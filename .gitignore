@@ -1,4 +1,4 @@
 venv/
-password.txt
+config.json
 database.json
 mayday.txt
